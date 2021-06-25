@@ -1,0 +1,20 @@
+use orders;
+select count(distinct user_id) from orders; #количество уникальных пользователей
+select count(*) from orders; #количество заказов
+select min(o_date), max(o_date) from orders o; #анализ периода данных
+select avg(price), o_date from orders o2 group by month(o_date); #средняя сумма по месяца
+select avg(price), o_date from orders o2 group by year(o_date); #средняя сумма по годам(увеличилась)
+select user_id, count(*) as cnt from orders group by user_id order by cnt desc limit 1; #самый активный пользователь
+
+select user_id 
+	from orders
+	where extract(year from o_date) = 2016 
+and user_id not in(
+	select user_id 
+	from orders
+	where extract(year from o_date) = 2017
+); #пользователи, которые перестали покупать
+
+select (avg(price)//(select avg(price), o_date from orders o2 group by year(o_date) limit 1))
+	from orders o2
+	group by month(o_date) #попытка сделать коэффициент сезонности
